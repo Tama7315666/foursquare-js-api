@@ -101,12 +101,32 @@ FourSquareUtils =
 		}
 	},
 	
-	doRequest: function(url, requestCallback, method)
+	createQueryString: function(prefix, parameters)
+	{
+		var query = "";
+		for(key in parameters) 
+		{
+			if(parameters[key] != undefined && parameters[key] != null)
+			{
+				query += "&" + key + "=" + parameters[key];
+			}
+		}
+		
+		if(query.length > 0)
+		{
+			prefix = (prefix) ? prefix : "";
+			query = prefix + query.substring(1);
+		}
+		
+		return query;
+	},
+	
+	doRequest: function(url, requestCallback, method, body)
 	{
 		var request = new XMLHttpRequest();
 	    var method = (method) ? method : "GET";
-		
-	    request.open(method, url, true);
+			    
+	    request.open(method, url, true);	    
 	    request.onreadystatechange = function(event) 
 	    {
 	    	if(request.readyState == 4) 
@@ -129,7 +149,16 @@ FourSquareUtils =
 		    	}
 	    	}
 	    };
-	    request.send();
+	    
+	    if(body)
+	    {
+	    	request.setRequestHeader("Content-Length", body.length);
+	    	request.send(body);
+	    }
+	    else
+	    {
+	    	request.send();
+	    }
 	}
 };
 
@@ -165,17 +194,16 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 	this.clientSecret = clientSecret;
 	
 	this.accessToken = FourSquareUtils.retrieveAccessToken();
-	this.authenticate = function(newWindow)
+	this.authenticate = function()
 	{
-		var authenticationURL = this.AUTHENTICATION_URL + "?client_id=" + this.clientId + "&response_type=token&redirect_uri=" + this.redirectUri; 
-		if(!newWindow)
-		{
-			location.href = authenticationURL;
-		}
-		else
-		{
-			window.open(authenticationURL);
-		}
+		var authenticationURL = this.AUTHENTICATION_URL + "?client_id=" + this.clientId; 
+		authenticationURL += FourSquareUtils.createQueryString("&",
+							 {
+							 	 response_type: "token",
+								 redirect_uri: this.redirectUri
+							 });
+		
+		window.open(authenticationURL);
 	};
 	
 	//=================================================
@@ -252,12 +280,15 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		search: function(requestCallback, phone, email, twitter, twitterSource, fbid, name)
 		{
 			var requestUrl = this.SEARCH_URL + client.requestQuery();
-			requestUrl += (phone) ? "&phone=" + phone : "";
-			requestUrl += (email) ? "&email=" + email : "";
-			requestUrl += (twitter) ? "&twitter=" + twitter : "";
-			requestUrl += (twitterSource) ? "&twitterSource=" + twitterSource : "";
-			requestUrl += (fbid) ? "&fbid=" + fbid : "";
-			requestUrl += (name) ? "&name=" + name : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									phone: phone,
+									email: email,
+									twitter: twitter,
+									twitterSource: twitterSource,
+									fbid: fbid,
+									name: name
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -272,8 +303,11 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		badges: function(requestCallback, userId, sets, badges)
 		{
 			var requestUrl = this.BADGES_URL.replace("{user_id}", userId) + client.requestQuery();
-			requestUrl += (sets) ? "&sets=" + sets : "";
-			requestUrl += (badges) ? "&badges=" + badges : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									sets: sets,
+									badges: badges
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -281,10 +315,13 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		checkins: function(requestCallback, userId, limit, offset, afterTimestamp, beforeTimestamp)
 		{
 			var requestUrl = this.CHECKINS_URL.replace("{user_id}", userId) + client.requestQuery();
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (offset) ? "&offset=" + offset : "";
-			afterTimestamp += (afterTimestamp) ? "&afterTimestamp=" + afterTimestamp : "";
-			beforeTimestamp += (beforeTimestamp) ? "&beforeTimestamp=" + beforeTimestamp : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									limit: limit,
+									offset: limit,
+									afterTimestamp: afterTimestamp,
+									beforeTimestamp: beforeTimestamp
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -292,19 +329,25 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		friends: function(requestCallback, userId, limit, offset)
 		{
 			var requestUrl = this.FRIENDS_URL.replace("{user_id}", userId) + client.requestQuery();
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (offset) ? "&offset=" + offset : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									limit: limit,
+									offset: offset
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
 		tips: function(requestCallback, userId, sort, latitude, longitude, limit, offset)
 		{
-			var requestUrl = this.TIPS_URL.replace("{user_id}", userId) + client.requestQuery();
-			requestUrl += (sort) ? "&sort=" + sort : "";
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";			
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (offset) ? "&offset=" + offset : "";
+			var requestUrl = this.TIPS_URL.replace("{user_id}", userId) + client.requestQuery();			
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									sort: sort,
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									limit: limit,
+									offset: offset
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -312,8 +355,11 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		todos: function(requestCallback, userId, sort, latitude, longitude)
 		{
 			var requestUrl = this.TODOS_URL.replace("{user_id}", userId) + client.requestQuery();
-			requestUrl += (sort) ? "&sort=" + sort : "";
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";			;
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									sort: sort,
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -321,9 +367,12 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		venuehistory: function(requestCallback, userId, afterTimestamp, beforeTimestamp)
 		{
 			var requestUrl = this.VENUE_HISTORY_URL.replace("{user_id}", userId) + client.requestQuery();
-			afterTimestamp += (afterTimestamp) ? "&afterTimestamp=" + afterTimestamp : "";
-			beforeTimestamp += (beforeTimestamp) ? "&beforeTimestamp=" + beforeTimestamp : "";
-			
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									afterTimestamp: afterTimestamp,
+									beforeTimestamp: beforeTimestamp
+								});
+
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},	
 		
@@ -357,7 +406,11 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		
 		setpings: function(requestCallback, userId, value)
 		{
-			var requestUrl = this.DENY_URL.replace("{user_id}", userId) + client.requestQuery() + "&value=" + value;
+			var requestUrl = this.DENY_URL.replace("{user_id}", userId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									value: value
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		}
@@ -424,15 +477,18 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		add: function(requestCallback, name, address, crossStreet, city, state, zip, phone, latitude, longitude, primaryCategoryId)
 		{
 			var requestUrl = this.ADD_URL + client.requestQuery();
-			requestUrl += (name) ? "&name=" + name : "";
-			requestUrl += (address) ? "&address=" + address : "";
-			requestUrl += (crossStreet) ? "&crossStreet=" + crossStreet : "";
-			requestUrl += (city) ? "&city=" + city : "";
-			requestUrl += (state) ? "&state=" + state : "";
-			requestUrl += (zip) ? "&zip=" + zip : "";
-			requestUrl += (phone) ? "&phone=" + phone : "";
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";
-			requestUrl += (primaryCategoryId) ? "&primaryCategoryId=" + primaryCategoryId : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									name: name,
+									address: address,
+									crossStreet: crossStreet,
+									city: city,
+									state: state,
+									zip: zip,
+									phone: phone, 
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									primaryCategoryId: primaryCategoryId
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
@@ -447,35 +503,46 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		search: function(requestCallback, latitude, longitude, accuracy, altitude, altitudeAccuracy, query, limit, intent, categoryId, url, providerId, linkedId)
 		{
 			var requestUrl = this.SEARCH_URL + client.requestQuery();
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";
-			requestUrl += (accuracy) ? "&accuracy=" + accuracy : "";
-			requestUrl += (altitude) ? "&altitude=" + altitude : "";
-			requestUrl += (altitudeAccuracy) ? "&altitudeAccuracy=" + altitudeAccuracy : "";
-			requestUrl += (query) ? "&query=" + query : "";
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (intent) ? "&intent=" + intent : "";
-			requestUrl += (categoryId) ? "&categoryId=" + categoryId : "";
-			requestUrl += (url) ? "&url=" + url : "";
-			requestUrl += (providerId) ? "&providerId=" + providerId : "";
-			requestUrl += (linkedId) ? "&linkedId=" + linkedId : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									accuracy: accuracy,
+									altitude: altitude,
+									altitudeAccuracy: altitudeAccuracy,
+									query: query,
+									limit: limit,
+									intent: intent,
+									categoryId: categoryId,
+									url: url, 
+									providerId: providerId,
+									linkedId: linkedId
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
 		trending: function(requestCallback, venueId, latitude, longitude, limit,  radius)
 		{
-			var requestUrl = this.TRENDING_URL + client.requestQuery() + "&ll=" + latitude + "," + longitude;
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (radius) ? "&radius=" + radius : "";
-			
+			var requestUrl = this.TRENDING_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									ll:  latitude + "," + longitude,
+									limit: limit,
+									radius: radius
+								});
+						
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
 		herenow: function(requestCallback, venueId, limit, offset, afterTimestamp)
 		{
 			var requestUrl = this.HERENOW_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (radius) ? "&radius=" + radius : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									limit: limit,
+									radius: radius,
+									afterTimestamp: afterTimestamp
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -483,9 +550,12 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		tips: function(requestCallback, venueId, sort, limit, offset)
 		{
 			var requestUrl = this.TIPS_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += (sort) ? "&sort=" + sort : "";
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (offset) ? "&offset=" + offset : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									sort: sort,
+									limit: limit,
+									offset: offset
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -493,9 +563,12 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		photos: function(requestCallback, venueId, group, limit, offset)
 		{
 			var requestUrl = this.PHOTOS_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += (group) ? "&group=" + group : "";
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (offset) ? "&offset=" + offset : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									group: group,
+									limit: limit,
+									offset: offset
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -509,7 +582,11 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 	
 		marktodo: function(requestCallback, venueId, text)
 		{
-			var requestUrl = this.MARK_TODO_URL.replace("{venue_id}", venueId) + client.requestQuery() + "&text=" + text;
+			var requestUrl = this.MARK_TODO_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									text: text
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
@@ -564,7 +641,10 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		checkins: function(requestCallback, checkinId, signature)
 		{
 			var requestUrl = this.CHECKINS_URL.replace("{checkin_id}", checkinId) + client.requestQuery();
-			requestUrl += (signature) ? "&signature=" + signature : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									signature: signature
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -572,13 +652,18 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		add: function(requestCallback, venueId, venue, shout, broadcast, latitude, longitude, accuracy, altitude, altitudeAccuracy)
 		{
 			var requestUrl = this.ADD_URL + client.requestQuery();
-			requestUrl += (venueId) ? "venueId" + venueId : "&venue=" + venue;
-			requestUrl += (shout) ? "&shout=" + shout : "";
-			requestUrl += (accuracy) ? "&broadcast=" + broadcast : "";
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";
-			requestUrl += (accuracy) ? "&llAcc=" + accuracy : "";
-			requestUrl += (altitude) ? "&alt=" + altitude : "";
-			requestUrl += (altitudeAccuracy) ? "&altAcc=" + altitudeAccuracy : "";
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									venueId: venueId,
+									venue: venue,
+									shout: shout,
+									accuracy: accuracy,
+									broadcast: broadcast,
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									llAcc: accuracy,
+									alt: altitude,
+									altAcc: altitudeAccuracy
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
@@ -586,10 +671,13 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		recent: function(requestCallback, latitude, longitude, limit, afterTimestamp)
 		{
 			var requestUrl = this.RECENT_URL + client.requestQuery();
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (afterTimestamp) ? "&afterTimestamp=" + afterTimestamp : "";
-			
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									limit: limit,
+									afterTimestamp: afterTimestamp
+								});
+
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
@@ -644,19 +732,28 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 		
 		add: function(requestCallback, venueId, text, url)
 		{
-			var requestUrl = this.ADD_URL + client.requestQuery() + "&venueId=" + venueId + "&text=" + text;
-			requestUrl += (url) ? "&url=" + url : "";
+			var requestUrl = this.ADD_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									venueId: venueId,
+									text: text,
+									url: url
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
 		search: function(requestCallback, latitude, longitude, limit, offset, filter, query)
 		{
-			var requestUrl = this.SEARCH_URL + client.requestQuery() + "&ll=" + latitude + "," + longitude;
-			requestUrl += (limit) ? "&limit=" + limit : "";
-			requestUrl += (offset) ? "&offset=" + offset : "";
-			requestUrl += (filter) ? "&filter=" + filter : "";
-			requestUrl += (query) ? "&query=" + query : "";
+			var requestUrl = this.SEARCH_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									limit: limit,
+									offset: offset,
+									filter: filter,
+									query: query
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -701,9 +798,22 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		add: function(requestCallback)
+		add: function(requestCallback, bytes, checkinId, tipId, venueId, broadcast, latitude, longitude, accuracy, altitude, altitudeAccuracy)
 		{
-			alert("The method photosClient#add still has to implemented");
+			var requestUrl = this.ADD_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									checkinId: checkinId,
+									tipId: tipId,
+									venueId: venueId,
+									broadcast: broadcast,
+									ll: (latitude && longitude) ? latitude + "," + longitude : null,
+									llAcc: accuracy,
+									alt: altitude,
+									altAcc: altitudeAccuracy
+								});
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST", bytes);
 		}
 	};
 	
@@ -759,18 +869,26 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 	
 		special: function(requestCallback, venueId, specialId)
 		{
-			var requestUrl = this.SPECIAL_URL.replace("{special_id}", specialId) + client.requestQuery() + "&venueId=" + venueId;
+			var requestUrl = this.SPECIAL_URL.replace("{special_id}", specialId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									venueId: venueId
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
 		search: function(requestCallback, latitude, longitude, accuracy, altitude, altitudeAccuracy, limit)
 		{
-			var requestUrl = this.SEARCH_URL + client.requestQuery() + "&ll=" + latitude + "," + longitude;
-			requestUrl += (accuracy) ? "&llAcc=" + accuracy : "";
-			requestUrl += (altitude) ? "&alt=" + altitude : "";
-			requestUrl += (altitudeAccuracy) ? "&altAcc=" + altitudeAccuracy : "";
-			requestUrl += (limit) ? "&limit=" + limit : "";
+			var requestUrl = this.SEARCH_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&",
+								{
+									ll: latitude + "," + longitude,
+									llAcc: accuracy,
+									alt: altitude,
+									altAcc: altitudeAccuracy,
+									limit: limit
+								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		}
