@@ -211,6 +211,8 @@ FourSquareClient = function(clientId, clientSecret, redirectUri)
 	//=================================================
 	
 	// create object to access;
+  var client = this; 
+   
 	this.usersClient = 
 	{
 		/**
