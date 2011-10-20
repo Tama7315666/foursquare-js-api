@@ -78,12 +78,12 @@ FourSquareUtils =
 		var hash = document.location.hash;
 		if(hash.indexOf("#access_token=") != -1)
 		{
-			FourSquareUtils.setCookie("access_token", hash.replace("#access_token=", ""));
+			FourSquareUtils.setCookie("fs_access_token", hash.replace("#access_token=", ""));
 			return hash.replace("#access_token=", "");
 		}
-		else if(FourSquareUtils.getCookie("access_token") != null)
+		else if(FourSquareUtils.getCookie("fs_access_token") != null)
 		{
-			return FourSquareUtils.getCookie("access_token");
+			return FourSquareUtils.getCookie("fs_access_token");
 		}
 	
 		return null;
@@ -188,12 +188,21 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 		}
 	};
 	
-	if(clientId == undefined || clientSecret == undefined || redirectUri == undefined)
+	if(clientId == undefined || redirectUri == undefined)
 	{
 		if(rememberAppCredentials)
 		{
 			// see if we can retrieve the cookies
-			this.clientId = FourSquareUtils.getCookie("");
+			this.redirectUri = FourSquareUtils.getCookie("fs_redirect_uri");
+			this.clientId = FourSquareUtils.getCookie("fs_client_id");
+			this.clientSecret = FourSquareUtils.getCookie("fs_client_secret");
+		}
+		
+		if((clientId == undefined || redirectUri == undefined) && window.fsapi != undefined)
+		{
+			this.redirectUri = window.fsapi.fs_redirect_uri;
+			this.clientId = window.fsapi.fs_client_id;
+			this.clientSecret = window.fsapi.fs_client_secret;
 		}
 	}
 	else
@@ -204,9 +213,14 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 		
 		if(rememberAppCredentials)
 		{
-			FourSquareUtils.setCookie("fs_client_id", clientId)
-			FourSquareUtils.setCookie("fs_client_secret", clientSecret)
-			FourSquareUtils.setCookie("fs_redirect_uri", redirectUri)
+			FourSquareUtils.setCookie("fs_client_id", this.clientId);
+			FourSquareUtils.setCookie("fs_client_secret", this.clientSecret);
+			FourSquareUtils.setCookie("fs_redirect_uri", this.redirectUri);
+			
+			window.fsapi = {};
+			window.fsapi.fs_redirect_uri = this.redirectUri;
+			window.fsapi.fs_client_id = this.clientId;
+			window.fsapi.fs_client_secret = this.clientSecret;
 		}
 	}
 	
