@@ -26,81 +26,71 @@ FourSquareClient.prototype.getTipsClient = function()
 {
 	var client = this;
 	return {
-		/**
-		 * @constant
-		 */
 		TIPS_URL: "https://api.foursquare.com/v2/tips/TIP_ID",
-		/**
-		 * @constant
-		 */
+
 		ADD_URL: "https://api.foursquare.com/v2/tips/add",
-		/**
-		 * @constant
-		 */
+
 		SEARCH_URL: "https://api.foursquare.com/v2/tips/search",
-		/**
-		 * @constant
-		 */
+
 		MARK_TODO_URL: "https://api.foursquare.com/v2/tips/{tip_id}/marktodo",
-		/**
-		 * @constant
-		 */
+
 		MARK_DONE_URL: "https://api.foursquare.com/v2/tips/{tip_id}/markdone",
-		/**
-		 * @constant
-		 */
+
 		UNMARK_URL: "https://api.foursquare.com/v2/tips/{tip_id}/unmark",
 	
-		tips: function(requestCallback, tipId)
+		tips: function(tipId, requestCallback)
 		{
 			var requestUrl = this.PHOTOS_URL.replace("{tip_id}", tipId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		add: function(requestCallback, venueId, text, url)
+		add: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				venueId: venueId,
+//				text: text,
+//				url: url
+//			}
+			
 			var requestUrl = this.ADD_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									venueId: venueId,
-									text: text,
-									url: url
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
-		search: function(requestCallback, latitude, longitude, limit, offset, filter, query)
+		search: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				ll,
+//				limit,
+//				offset,
+//				filter,
+//				query
+//			}
+			
 			var requestUrl = this.SEARCH_URL + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									ll: (latitude && longitude) ? latitude + "," + longitude : null,
-									limit: limit,
-									offset: offset,
-									filter: filter,
-									query: query
-								});
+								);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		marktodo: function(requestCallback, tipId)
+		marktodo: function(tipId, requestCallback)
 		{
 			var requestUrl = this.MARK_TODO_URL.replace("{tip_id}", tipId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
-		markdone: function(requestCallback, tipId)
+		markdone: function(tipId, requestCallback)
 		{
 			var requestUrl = this.MARK_DONE_URL.replace("{tip_id}", tipId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
-		unmark: function(requestCallback, tipId)
+		unmark: function(tipId, requestCallback)
 		{
 			var requestUrl = this.UNMARK_URL.replace("{tip_id}", tipId) + client.requestQuery();
 			

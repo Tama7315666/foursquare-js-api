@@ -24,7 +24,7 @@ THE SOFTWARE.
  
  <html>
 	<head>
-		<title>Foursquare JS API - Venues Endpoint</title>
+		<title>Foursquare JS API - Venues &middot; Search Endpoint</title>
 		
 		<script type="text/javascript" src="../../js/foursquare-js-api.js"></script>
 	</head>
@@ -45,18 +45,49 @@ THE SOFTWARE.
 		</form>
 		
 		<h1>Endpoint</h1>
-		<form id="endpoint-form" onsubmit="return false;">
-			<label>Photo ID</label><br />
-			<input type="text" id="venue-id-input" value="49b15db9f964a520d5521fe3" />
+		<form id="endpoint-form" onsubmit="return false;">			
+			<label>query</label><br />
+			<input type="text" id="venue-query-input" value="" /><br />
+			
+			<label>ll [latitude,longitude]*</label><br />
+			<input type="text" id="venue-ll-input" value="" /><br />
+						
+			<label>llAcc [location accuracy]</label><br />
+			<input type="text" id="venue-llAcc-input" value="" /><br />
+			
+			<label>alt [altitude]</label><br />
+			<input type="text" id="venue-alt-input" value="" /><br />
+			
+			<label>altAcc [altitude accuracy]</label><br />
+			<input type="text" id="venue-altAcc-input" value="" /><br />
+			
+			<label>limit</label><br />
+			<input type="text" id="venue-limit-input" value="" /><br />
+			
+			<label>intent</label><br />
+			<input type="text" id="venue-intent-input" value="" /><br />
+			
+			<label>categoryId</label><br />
+			<input type="text" id="venue-categoryId-input" value="" /><br />
+			
+			<label>url</label><br />
+			<input type="text" id="venue-url-input" value="" /><br />
+			
+			<label>providerId</label><br />
+			<input type="text" id="venue-providerId-input" value="" /><br />
+			
+			<label>linkedId</label><br />
+			<input type="text" id="venue-linkedId-input" value="" /><br />
+			
+			<label>radius</label><br />
+			<input type="text" id="venue-radius-input" value="" /><br />
 			
 			<button type="button" onclick="venues();">Perform</button>
 		</form>
 		
 		<div id="venue-container"></div>
 		
-		<script type="text/javascript">//<![CDATA[
-			var venueId = document.getElementById("venue-id-input").value;
-			
+		<script type="text/javascript">//<![CDATA[			
 			document.getElementById("redirect-uri-input").value = location.href;
 
 			function createClient()
@@ -80,53 +111,32 @@ THE SOFTWARE.
 
 			function venues()
 			{
-				venueId = document.getElementById("venue-id-input").value;
-				
+				var parameters = {
+					query: document.getElementById("venue-query-input").value,
+					ll: document.getElementById("venue-ll-input").value,
+					llAcc: document.getElementById("venue-llAcc-input").value,
+					alt: document.getElementById("venue-alt-input").value,
+					altAcc: document.getElementById("venue-altAcc-input").value,
+					limit: document.getElementById("venue-limit-input").value,
+					intent: document.getElementById("venue-intent-input").value,
+					categoryId: document.getElementById("venue-categoryId-input").value,
+					url: document.getElementById("venue-url-input").value,
+					providerId: document.getElementById("venue-providerId-input").value,
+					linkedId: document.getElementById("venue-linkedId-input").value,
+					radius: document.getElementById("venue-radius-input").value,
+				};
+								
 				var fsclient = new FourSquareClient(null, null, null, true);
-				fsclient.venuesClient.venues(venueId, { 
+				fsclient.venuesClient.search(parameters, { 
 					onSuccess: function(data)
 					{ 
 						console.log(data);
 					
-						var venueContainer = document.getElementById('venue-container');
-						if(venueContainer.firstChild)
-						{
-							venueContainer.removeChild(venueContainer.firstChild);
-						}
-
-						var parent = document.createElement("div");
-						venueContainer.appendChild(parent);
 						
-						var name = document.createElement("h2");
-						name.innerHTML = data.response.venue.name; 
-						parent.appendChild(name);
-
-						for(var idx = 0; idx < data.response.venue.hereNow.groups.length; idx++)
-						{
-							var group = data.response.venue.hereNow.groups[idx];
-							
-							var hereNow = document.createElement("h3");
-							hereNow.innerHTML = group.name + " ("+ group.count +"): "; 
-							parent.appendChild(hereNow);
-	
-							var persons = document.createElement("ul");
-							venueContainer.appendChild(persons);
-							for(var jdx = 0; jdx < group.count; jdx++)
-							{
-								var person = document.createElement("li");
-								person.innerHTML = group.items[jdx].user.firstName;
-								if(group.items[jdx].user.lastName != undefined)
-								{
-									person.innerHTML += group.items[jdx].user.lastName;
-								}
-								
-								persons.appendChild(person);
-							}
-						}
 					},
 					onFailure: function(data)
 					{
-						alert("Unable to retrieve venue.\nAre you sure you are authenticated and the venue id is correct?");
+						alert("Unable to perform search.\nAre you sure you are authenticated and input values are correct?");
 					}
 				});
 			}

@@ -26,17 +26,12 @@ FourSquareClient.prototype.getSettingsClient = function()
 {
 	var client = this;
 	return {
-		/**
-		 * @static
-		 */	
 		SETTING_URL: "https://api.foursquare.com/v2/settings/{setting_id}",
-		/**
-		 * @static
-		 */
+
 		SET_URL: "https://api.foursquare.com/v2/settings/{setting_id}/set",
 		
 		// sendToTwitter, sendToFacebook, receivePings, receiveCommentPings.
-		settings: function(requestCallback, settingId)
+		settings: function(settingId, requestCallback)
 		{
 			var settingParam = (settingId) ? settingId : "all";
 			var requestUrl = this.SETTING_URL.replace("{setting_id}", settingId) + client.requestQuery();
@@ -44,19 +39,17 @@ FourSquareClient.prototype.getSettingsClient = function()
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		set: function(requestCallback, settingId, value)
+		set: function(settingId, parameters, requestCallback)
 		{
-			if(value.toString() == "0" || value.toString() == "1")
-			{
-				var settingParam = (settingId) ? settingId : "all";
-				var requestUrl = this.SET_URL.replace("{setting_id}", settingId) + client.requestQuery() + "&value=" + value;
+//			var parameters = {
+//				value 
+//			}
 			
-				FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
-			}
-			else
-			{
-				console.error("Setting has to be '0' or '1'");
-			}
+			var settingParam = (settingId) ? settingId : "all";
+			var requestUrl = this.SET_URL.replace("{setting_id}", settingId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		}
 	}
 };

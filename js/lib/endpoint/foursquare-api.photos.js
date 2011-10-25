@@ -26,32 +26,30 @@ FourSquareClient.prototype.getPhotosClient = function()
 {
 	var client = this;
 	return {
-		/**
-		 * @constant
-		 */	
 		PHOTOS_URL: "https://api.foursquare.com/v2/photos/{photo_id}",
 		
-		photos: function(requestCallback, photoId)
+		photos: function(photoId, requestCallback)
 		{
 			var requestUrl = this.PHOTOS_URL.replace("{photo_id}", photoId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		add: function(requestCallback, bytes, checkinId, tipId, venueId, broadcast, latitude, longitude, accuracy, altitude, altitudeAccuracy)
+		add: function(bytes, parameters, requestCallback)
 		{
+//			var parameters = {
+//				checkinId,
+//				tipId,
+//				venueId,
+//				broadcast,
+//				ll,
+//				llAcc,
+//				alt,
+//				altAcc
+//			}
+			
 			var requestUrl = this.ADD_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									checkinId: checkinId,
-									tipId: tipId,
-									venueId: venueId,
-									broadcast: broadcast,
-									ll: (latitude && longitude) ? latitude + "," + longitude : null,
-									llAcc: accuracy,
-									alt: altitude,
-									altAcc: altitudeAccuracy
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST", bytes);
 		}

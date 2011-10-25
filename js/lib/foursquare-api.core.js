@@ -45,6 +45,15 @@ if(!window.XMLHttpRequest && window.ActiveXObject)
 	};
 } 	
 
+String.prototype.trim = function() 
+{
+	var	str = this.replace(/^\s\s*/, ''),
+		ws = /\s/,
+		i = str.length;
+	while (ws.test(str.charAt(--i)));
+	return str.slice(0, i + 1);
+}
+
 /**
  * @class
  */
@@ -55,9 +64,8 @@ FourSquareUtils =
 		var cookies = document.cookie.split(";");
 		for(var idx = 0; idx < cookies.length; idx++)
 		{
-			var cookieName = cookies[idx].substr(0, cookies[idx].indexOf("="));
+			var cookieName = cookies[idx].substr(0, cookies[idx].indexOf("=")).trim();
 			var cookieValue = cookies[idx].substr(cookies[idx].indexOf("=") + 1);
-			cookieName.replace(/^\s+|\s+$/g, "");
 
 			if(cookieName == toGet)
 			{
@@ -108,7 +116,10 @@ FourSquareUtils =
 		{
 			if(parameters[key] != undefined && parameters[key] != null)
 			{
-				query += "&" + key + "=" + parameters[key];
+				if(parameters[key].trim() != "")
+				{
+					query += "&" + key + "=" + parameters[key];
+				}
 			}
 		}
 		
@@ -180,11 +191,11 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 	{
 		if(!this.accessToken)
 		{
-			return "?client_id=" + this.clientId + "&client_secret=" + this.clientSecret;
+			return "?v=20111020&client_id=" + this.clientId + "&client_secret=" + this.clientSecret;
 		}
 		else
 		{
-			return "?oauth_token=" + this.accessToken;
+			return "?v=20111020&oauth_token=" + this.accessToken;
 		}
 	};
 	
@@ -196,13 +207,6 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 			this.redirectUri = FourSquareUtils.getCookie("fs_redirect_uri");
 			this.clientId = FourSquareUtils.getCookie("fs_client_id");
 			this.clientSecret = FourSquareUtils.getCookie("fs_client_secret");
-		}
-		
-		if((clientId == undefined || redirectUri == undefined) && window.fsapi != undefined)
-		{
-			this.redirectUri = window.fsapi.fs_redirect_uri;
-			this.clientId = window.fsapi.fs_client_id;
-			this.clientSecret = window.fsapi.fs_client_secret;
 		}
 	}
 	else
@@ -216,11 +220,6 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 			FourSquareUtils.setCookie("fs_client_id", this.clientId);
 			FourSquareUtils.setCookie("fs_client_secret", this.clientSecret);
 			FourSquareUtils.setCookie("fs_redirect_uri", this.redirectUri);
-			
-			window.fsapi = {};
-			window.fsapi.fs_redirect_uri = this.redirectUri;
-			window.fsapi.fs_client_id = this.clientId;
-			window.fsapi.fs_client_secret = this.clientSecret;
 		}
 	}
 	

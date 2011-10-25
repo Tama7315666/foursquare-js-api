@@ -26,37 +26,34 @@ FourSquareClient.prototype.getSpecialsClient = function()
 {
 	var client = this;
 	return {
-		/**
-		 * @static
-		 */	
 		SPECIAL_URL: "https://api.foursquare.com/v2/specials/{special_id}",
-		/**
-		 * @static
-		 */
+
 		SEARCH_URL: "https://api.foursquare.com/v2/specials/search",
 	
-		special: function(requestCallback, venueId, specialId)
+		special: function(specialId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				venueId
+//			}
+		
 			var requestUrl = this.SPECIAL_URL.replace("{special_id}", specialId) + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									venueId: venueId
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		search: function(requestCallback, latitude, longitude, accuracy, altitude, altitudeAccuracy, limit)
+		search: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				ll,
+//				llAcc,
+//				alt,
+//				altAcc,
+//				limit
+//			}
+			
 			var requestUrl = this.SEARCH_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									ll: latitude + "," + longitude,
-									llAcc: accuracy,
-									alt: altitude,
-									altAcc: altitudeAccuracy,
-									limit: limit
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		}

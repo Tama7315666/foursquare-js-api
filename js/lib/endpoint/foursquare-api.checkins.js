@@ -26,80 +26,82 @@ FourSquareClient.prototype.getCheckinsClient = function()
 {
 	var client = this;
 	return {
-		/**
-		 * 	@constant
-		 */
 		CHECKINS_URL: "https://api.foursquare.com/v2/checkins/{checkin_id}",
-		/**
-		 *	@constant
-		 */
+
 		ADD_URL: "https://api.foursquare.com/v2/checkins/add",
-		/**
-		 *	@constant
-		 */
+
 		RECENT_URL: "https://api.foursquare.com/v2/checkins/recent",
-		/**
-		 *	@constant
-		 */
+
 		ADD_COMMENT_URL: "https://api.foursquare.com/v2/checkins/{checkin_id}/addcomment",
-		/**
-		 *	@constant
-		 */
+
 		DELETE_COMMENT_URL: "https://api.foursquare.com/v2/checkins/{checkin_id}/deletecomment",
 			
-		checkins: function(requestCallback, checkinId, signature)
+		checkins: function(checkinId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				signature: signature
+//			}
+		
 			var requestUrl = this.CHECKINS_URL.replace("{checkin_id}", checkinId) + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									signature: signature
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		add: function(requestCallback, venueId, venue, shout, broadcast, latitude, longitude, accuracy, altitude, altitudeAccuracy)
+		add: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				venueId,
+//				venue,
+//				shout,
+//				accuracy,
+//				broadcast,
+//				ll,
+//				llAcc,
+//				alt,
+//				altAcc
+//			}
+			
 			var requestUrl = this.ADD_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									venueId: venueId,
-									venue: venue,
-									shout: shout,
-									accuracy: accuracy,
-									broadcast: broadcast,
-									ll: (latitude && longitude) ? latitude + "," + longitude : null,
-									llAcc: accuracy,
-									alt: altitude,
-									altAcc: altitudeAccuracy
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
-		recent: function(requestCallback, latitude, longitude, limit, afterTimestamp)
+		recent: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				ll,
+//				limit,
+//				afterTimestamp
+//			}
+			
 			var requestUrl = this.RECENT_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									ll: (latitude && longitude) ? latitude + "," + longitude : null,
-									limit: limit,
-									afterTimestamp: afterTimestamp
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		addcomment: function(requestCallback, checkinId)
+		addcomment: function(checkinId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				text
+//			}
+			
 			var requestUrl = this.ADD_COMMENT_URL.replace("{checkin_id}", checkinId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 			
-		deletecomment: function(requestCallback, checkinId)
+		deletecomment: function(checkinId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				commentId
+//			}
+			
 			var requestUrl = this.DELETE_COMMENT_URL.replace("{checkin_id}", checkinId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		}

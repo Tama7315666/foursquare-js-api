@@ -75,28 +75,29 @@ FourSquareClient.prototype.getVenuesClient = function()
 		 */
 		PROPOSE_EDIT_URL: "https://api.foursquare.com/v2/venues/{venue_id}/proposeedit",
 		
-		venues: function(requestCallback, venueId)
+		venues: function(venueId, requestCallback)
 		{
 			var requestUrl = this.VENUES_URL.replace("{venue_id}", venueId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		add: function(requestCallback, name, address, crossStreet, city, state, zip, phone, latitude, longitude, primaryCategoryId)
+		add: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				name: null, 
+//				address: null,
+//				crossStreet: null, 
+//				city: null, 
+//				state: null, 
+//				zip: null,
+//				phone: null, 
+//				ll: 0.0,0.0
+//				primaryCategoryId
+//			};
+						
 			var requestUrl = this.ADD_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									name: name,
-									address: address,
-									crossStreet: crossStreet,
-									city: city,
-									state: state,
-									zip: zip,
-									phone: phone, 
-									ll: (latitude && longitude) ? latitude + "," + longitude : null,
-									primaryCategoryId: primaryCategoryId
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
@@ -108,117 +109,137 @@ FourSquareClient.prototype.getVenuesClient = function()
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		search: function(requestCallback, latitude, longitude, accuracy, altitude, altitudeAccuracy, query, limit, intent, categoryId, url, providerId, linkedId)
+		search: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				requestCallback, 
+//				ll, 
+//				llAcc, 
+//				altAcc, 
+//				alt, 
+//				query, 
+//				limit, 
+//				intent, 
+//				categoryId, 
+//				url, 
+//				providerId, 
+//				linkedId,
+//				radius
+//			}
+			
 			var requestUrl = this.SEARCH_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									ll: (latitude && longitude) ? latitude + "," + longitude : null,
-									accuracy: accuracy,
-									altitude: altitude,
-									altitudeAccuracy: altitudeAccuracy,
-									query: query,
-									limit: limit,
-									intent: intent,
-									categoryId: categoryId,
-									url: url, 
-									providerId: providerId,
-									linkedId: linkedId
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		trending: function(requestCallback, venueId, latitude, longitude, limit,  radius)
+		trending: function(parameters, requestCallback)
 		{
+//			var parameters = {
+//				ll,
+//				limit,
+//				radius
+//			}
+			
 			var requestUrl = this.TRENDING_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									ll:  latitude + "," + longitude,
-									limit: limit,
-									radius: radius
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 						
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		herenow: function(requestCallback, venueId, limit, offset, afterTimestamp)
+		herenow: function(venueId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				limit,
+//				radius,
+//				afterTimestamp
+//			}
+			
 			var requestUrl = this.HERENOW_URL.replace("{venue_id}", venueId) + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&",
 								{
-									limit: limit,
-									radius: radius,
-									afterTimestamp: afterTimestamp
+									
 								});
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 
-		tips: function(requestCallback, venueId, sort, limit, offset)
+		tips: function(venueId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				sort,
+//				limit,
+//				offset
+//			}
+			
 			var requestUrl = this.TIPS_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									sort: sort,
-									limit: limit,
-									offset: offset
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		photos: function(requestCallback, venueId, group, limit, offset)
+		photos: function(venueId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				group,
+//				limit,
+//				offset
+//			}
+			
 			var requestUrl = this.PHOTOS_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									group: group,
-									limit: limit,
-									offset: offset
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		links: function(requestCallback, venueId)
+		links: function(venueId, requestCallback)
 		{
 			var requestUrl = this.LINKS_URL.replace("{venue_id}", venueId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 	
-		marktodo: function(requestCallback, venueId, text)
+		marktodo: function(venueId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				text
+//			}
+			
 			var requestUrl = this.MARK_TODO_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									text: text
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
-		flag: function(requestCallback, venueId, problem)
+		flag: function(venueId, parameters, requestCallback)
 		{
-			var requestUrl = this.FLAG_URL.replace("{venue_id}", venueId) + client.requestQuery() + "&problem=" + problem;
+//			var parameters = {
+//				problem
+//			}
+			
+			var requestUrl = this.FLAG_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		},
 		
-		proposeedit: function(requestCallback, venueId, name, address, crossStreet, city, state, zip, phone, latitude, longitude, primaryCategoryId)
+		proposeedit: function(venueId, parameters, requestCallback)
 		{
+//			var parameters = {
+//				name, 
+//				address, 
+//				crossStreet, 
+//				city, 
+//				state, 
+//				zip, 
+//				phone, 
+//				ll, 
+//				primaryCategoryId
+//			}
+			
 			var requestUrl = this.PROPOSE_EDIT_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += (name) ? "&name=" + name : "";
-			requestUrl += (address) ? "&address=" + address : "";
-			requestUrl += (crossStreet) ? "&crossStreet=" + crossStreet : "";
-			requestUrl += (city) ? "&city=" + city : "";
-			requestUrl += (state) ? "&state=" + state : "";
-			requestUrl += (zip) ? "&zip=" + zip : "";
-			requestUrl += (phone) ? "&phone=" + phone : "";
-			requestUrl += (latitude && longitude) ? "&ll=" + latitude + "," + longitude : "";
-			requestUrl += (primaryCategoryId) ? "&primaryCategoryId=" + primaryCategoryId : "";
-			
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+						
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
 		}
 	}
