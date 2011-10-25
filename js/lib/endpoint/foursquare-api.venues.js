@@ -156,10 +156,7 @@ FourSquareClient.prototype.getVenuesClient = function()
 //			}
 			
 			var requestUrl = this.HERENOW_URL.replace("{venue_id}", venueId) + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								{
-									
-								});
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},

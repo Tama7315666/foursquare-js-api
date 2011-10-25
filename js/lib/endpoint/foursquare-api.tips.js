@@ -26,7 +26,7 @@ FourSquareClient.prototype.getTipsClient = function()
 {
 	var client = this;
 	return {
-		TIPS_URL: "https://api.foursquare.com/v2/tips/TIP_ID",
+		TIPS_URL: "https://api.foursquare.com/v2/tips/{tip_id}",
 
 		ADD_URL: "https://api.foursquare.com/v2/tips/add",
 
@@ -40,7 +40,7 @@ FourSquareClient.prototype.getTipsClient = function()
 	
 		tips: function(tipId, requestCallback)
 		{
-			var requestUrl = this.PHOTOS_URL.replace("{tip_id}", tipId) + client.requestQuery();
+			var requestUrl = this.TIPS_URL.replace("{tip_id}", tipId) + client.requestQuery();
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
@@ -70,8 +70,7 @@ FourSquareClient.prototype.getTipsClient = function()
 //			}
 			
 			var requestUrl = this.SEARCH_URL + client.requestQuery();
-			requestUrl += FourSquareUtils.createQueryString("&",
-								);
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},

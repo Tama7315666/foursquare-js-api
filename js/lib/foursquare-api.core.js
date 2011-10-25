@@ -253,4 +253,6 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 	this.settingsClient = this.getSettingsClient();
 	
 	this.specialsClient = this.getSpecialsClient();
+	
+	this.updatesClient = this.getUpdatesClient();
 };
