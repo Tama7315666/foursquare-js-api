@@ -26,7 +26,7 @@ var getScriptPath = function()
 {
     var scripts = document.getElementsByTagName('script');
     var path = '';
-    
+        
     if(scripts && scripts.length>0) 
     {
         for(var i in scripts) 
@@ -43,25 +43,23 @@ var getScriptPath = function()
 
 function require(file)
 {
-	try
-	{
-	      // inserting via DOM fails in Safari 2.0, so brute force approach
-	      document.write('<script type="text/javascript" src="'+file+'"><\/script>');
-	} 
-	catch(e) 
-	{
-	      // for xhtml+xml served content, fall back to DOM methods
-	      var script = document.createElement('script');
-	      script.type = 'text/javascript';
-	      script.src = file;
-	      document.getElementsByTagName('head')[0].appendChild(script);
-	}
+    try
+    {
+        document.write('<script type="text\/javascript" src="'+file+'" charset="utf-8"><\/s' + 'cript>');
+    }
+    catch(exc)
+    {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = file;
+        document.getElementsByTagName('head')[0].appendChild(script);
+    }
 }
 
 var path = getScriptPath();
 require(path + "lib/foursquare-api.core.js");
 
-var types = ["photos", "venues", "settings", "users", "checkins", "tips", "specials", "updates"];
+var types = ["photos", "venues", "settings", "users", "checkins", "tips", "specials"];
 for(var type in types)
 {
 	require(path + "lib/endpoint/foursquare-api."+ types[type] +".js");

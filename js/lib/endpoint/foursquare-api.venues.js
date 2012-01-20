@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-FourSquareClient.prototype.getVenuesClient = function()
+FourSquareEndpoint.getVenuesClient = function()
 {
 	var client = this;
 	return {

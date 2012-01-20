@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
+FourSquareEndpoint = {};
+
 // make sure we can do XMLHttpRequests
 if(!window.XMLHttpRequest && window.ActiveXObject) 
 {
@@ -59,6 +61,35 @@ String.prototype.trim = function()
  */
 FourSquareUtils = 
 {
+    noStorageNotification: true,
+    
+    cookieSupport: function()
+    {
+        try
+        {
+            return (document.cookies != undefined)
+        }
+        catch(exception)
+        {
+            return false;
+        }
+    },
+    
+    storageSupport: function()
+    {
+        try
+        {
+            window.localStorage.getItem("test");
+            return ('localStorage' in window);
+        }
+        catch(exc)
+        {
+            return false
+        }
+        
+        return false;
+    },
+    
 	getCookie: function(toGet)
 	{
 		var cookies = document.cookie.split(";");
@@ -71,7 +102,7 @@ FourSquareUtils =
 			{
 				return unescape(cookieValue);
 			}
-  		}
+        }
   		
   		return null;
 	},
@@ -80,18 +111,56 @@ FourSquareUtils =
 	{
 		document.cookie = name + "=" + value;
 	},
+    
+    retrieveValue: function(name)
+    {
+        if(FourSquareUtils.cookieSupport())
+        {
+            return FourSquareUtils.getCookie(name);
+        }
+        else if(FourSquareUtils.storageSupport())
+        {
+            return localStorage.getItem(name);
+        }
+        
+        if(noStorageNotification)
+        {
+            alert('unable to support value storage');
+            FourSquareUtils.noStorageNotification = false;
+        }
+    },
+    
+    storeValue: function(name, value)
+    {
+        if(FourSquareUtils.cookieSupport())
+        {
+            FourSquareUtils.setCookie(name, value);
+            return;
+        }
+        else if(FourSquareUtils.storageSupport())
+        {
+            localStorage.setItem(name, value);
+            return;
+        }
+        
+        if(noStorageNotification)
+        {
+            alert('unable to support value storage');
+            FourSquareUtils.noStorageNotification = false;
+        }
+    },
 	
 	retrieveAccessToken: function()
 	{
 		var hash = document.location.hash;
 		if(hash.indexOf("#access_token=") != -1)
 		{
-			FourSquareUtils.setCookie("fs_access_token", hash.replace("#access_token=", ""));
+			FourSquareUtils.storeValue("fs_access_token", hash.replace("#access_token=", ""));
 			return hash.replace("#access_token=", "");
 		}
-		else if(FourSquareUtils.getCookie("fs_access_token") != null)
+		else if(FourSquareUtils.retrieveValue("fs_access_token") != null)
 		{
-			return FourSquareUtils.getCookie("fs_access_token");
+			return FourSquareUtils.retrieveValue("fs_access_token");
 		}
 	
 		return null;
@@ -116,13 +185,20 @@ FourSquareUtils =
 		{
 			if(parameters[key] != undefined && parameters[key] != null)
 			{
-				if(parameters[key].trim() != "")
-				{
-					query += "&" + key + "=" + parameters[key];
-				}
+                if(typeof parameters[key] == "string")
+                {
+                    if(parameters[key].trim() != "")
+                    {
+                        query += "&" + key + "=" + parameters[key];
+                    }
+                }
+                else
+                {
+                    query += "&" + key + "=" + parameters[key];
+                }
 			}
 		}
-		
+
 		if(query.length > 0)
 		{
 			prefix = (prefix) ? prefix : "";
@@ -204,9 +280,9 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 		if(rememberAppCredentials)
 		{
 			// see if we can retrieve the cookies
-			this.redirectUri = FourSquareUtils.getCookie("fs_redirect_uri");
-			this.clientId = FourSquareUtils.getCookie("fs_client_id");
-			this.clientSecret = FourSquareUtils.getCookie("fs_client_secret");
+			this.redirectUri = FourSquareUtils.retrieveValue("fs_redirect_uri");
+			this.clientId = FourSquareUtils.retrieveValue("fs_client_id");
+			this.clientSecret = FourSquareUtils.retrieveValue("fs_client_secret");
 		}
 	}
 	else
@@ -217,9 +293,9 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 		
 		if(rememberAppCredentials)
 		{
-			FourSquareUtils.setCookie("fs_client_id", this.clientId);
-			FourSquareUtils.setCookie("fs_client_secret", this.clientSecret);
-			FourSquareUtils.setCookie("fs_redirect_uri", this.redirectUri);
+			FourSquareUtils.storeValue("fs_client_id", this.clientId);
+			FourSquareUtils.storeValue("fs_client_secret", this.clientSecret);
+			FourSquareUtils.storeValue("fs_redirect_uri", this.redirectUri);
 		}
 	}
 	
@@ -240,19 +316,19 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 	// The separate clients for each type of endpoint.
 	//=================================================
 
-	this.usersClient = this.getUsersClient();	
+	this.usersClient = FourSquareEndpoint.getUsersClient.call(this);	
+
+	this.venuesClient = FourSquareEndpoint.getVenuesClient.call(this); 
 	
-	this.venuesClient = this.getVenuesClient();
-	
-	this.checkinsClient = this.getCheckinsClient();
+	this.checkinsClient = FourSquareEndpoint.getCheckinsClient.call(this); 
 		
-	this.tipsClient = this.getTipsClient();
+	this.tipsClient = FourSquareEndpoint.getTipsClient.call(this); 
 	
-	this.photosClient = this.getPhotosClient();
+	this.photosClient = FourSquareEndpoint.getPhotosClient.call(this); 
 	
-	this.settingsClient = this.getSettingsClient();
+	this.settingsClient = FourSquareEndpoint.getSettingsClient.call(this); 
 	
-	this.specialsClient = this.getSpecialsClient();
+	this.specialsClient = FourSquareEndpoint.getSpecialsClient.call(this); 
 	
-	this.updatesClient = this.getUpdatesClient();
+//	this.updatesClient = FourSquareEndpoint.getUpdatesClient.call(this); 
 };

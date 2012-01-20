@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-FourSquareClient.prototype.getCheckinsClient = function()
+FourSquareEndpoint.getCheckinsClient = function()
 {
 	var client = this;
 	return {
