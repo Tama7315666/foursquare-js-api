@@ -41,7 +41,23 @@ FourSquareEndpoint.getVenuesClient = function()
 		/**
 		 * @constant
 		 */
+		EXPLORE_URL: "https://api.foursquare.com/v2/venues/explore",
+		/**
+		 * @constant
+		 */
+		MANAGED_URL: "https://api.foursquare.com/v2/venues/managed",
+		/**
+		 * @constant
+		 */
 		SEARCH_URL: "https://api.foursquare.com/v2/venues/search",
+		/**
+		 * @constant
+		 */
+		SUGGESTIONCOMPLETION_URL: "https://api.foursquare.com/v2/venues/suggestcompletion",
+		/**
+		 * @constant
+		 */
+		TIMESERIES_URL: "https://api.foursquare.com/v2/venues/timeseries",
 		/**
 		 * @constant
 		 */
@@ -49,11 +65,23 @@ FourSquareEndpoint.getVenuesClient = function()
 		/**
 		 * @constant
 		 */
+		EVENTS_URL: "https://api.foursquare.com/v2/venues/{venue_id}/events",
+		/**
+		 * @constant
+		 */
 		HERENOW_URL: "https://api.foursquare.com/v2/venues/{venue_id}/herenow",
 		/**
 		 * @constant
 		 */
-		TIPS_URL: "https://api.foursquare.com/v2/venues/{venue_id}/tips",
+		LINKS_URL: "https://api.foursquare.com/v2/venues/{venue_id}/links",
+		/**
+		 * @constant
+		 */
+		LISTED_URL: "https://api.foursquare.com/v2/venues/{venue_id}/listed",
+		/**
+		 * @constant
+		 */
+		MENU_URL: "https://api.foursquare.com/v2/venues/{venue_id}/menu",
 		/**
 		 * @constant
 		 */
@@ -61,7 +89,19 @@ FourSquareEndpoint.getVenuesClient = function()
 		/**
 		 * @constant
 		 */
-		LINKS_URL: "https://api.foursquare.com/v2/venues/{venue_id}/links",
+		SIMILAR_URL: "https://api.foursquare.com/v2/venues/{venue_id}/similar",
+		/**
+		 * @constant
+		 */
+		STATS: "https://api.foursquare.com/v2/venues/{venue_id}/stats",
+		/**
+		 * @constant
+		 */
+		TIPS_URL: "https://api.foursquare.com/v2/venues/{venue_id}/tips",
+		/**
+		 * @constant
+		 */
+		EDIT_URL: "https://api.foursquare.com/v2/venues/{venue_id}/edit",
 		/**
 		 * @constant
 		 */
@@ -109,10 +149,36 @@ FourSquareEndpoint.getVenuesClient = function()
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		search: function(parameters, requestCallback)
+		explore: function(parameters, requestCallback)
 		{
 //			var parameters = {
-//				requestCallback, 
+//				ll, 
+//				llAcc, 
+//				altAcc, 
+//				alt, 
+//				radius, 
+//				section, 
+//				query, 
+//				limit, 
+//				intent, 
+//				novelty
+//			}				
+			
+			var requestUrl = this.EXPLORE_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		managed: function(requestCallback)
+		{
+			var requestUrl = this.MANAGED_URL + client.requestQuery();
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		search: function(parameters, requestCallback)
+		{
+//			var parameters = { 
 //				ll, 
 //				llAcc, 
 //				altAcc, 
@@ -133,6 +199,37 @@ FourSquareEndpoint.getVenuesClient = function()
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
+		suggestcompletion: function(parameters, requestCallback)
+		{
+//			var parameters = { 
+//				ll, 
+//				llAcc, 
+//				altAcc, 
+//				alt, 
+//				query, 
+//				limit
+//			}			
+			
+			var requestUrl = this.SUGGESTIONCOMPLETION_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		timeseries: function()
+		{
+//			var parameters = { 
+//				venueId, 
+//				startAt, 
+//				endAt 
+//			}			
+		
+			var requestUrl = this.TIMESERIES_URL + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
 		trending: function(parameters, requestCallback)
 		{
 //			var parameters = {
@@ -144,6 +241,13 @@ FourSquareEndpoint.getVenuesClient = function()
 			var requestUrl = this.TRENDING_URL + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 						
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		events: function(venueId, requestCallback)
+		{
+			var requestUrl = this.EVENTS_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
@@ -160,19 +264,31 @@ FourSquareEndpoint.getVenuesClient = function()
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
-
-		tips: function(venueId, parameters, requestCallback)
+		
+		links: function(venueId, requestCallback)
+		{
+			var requestUrl = this.LINKS_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		listed: function(venueId, parameters, requestCallback)
 		{
 //			var parameters = {
-//				sort,
+//				group,
 //				limit,
 //				offset
-//			}
-			
-			var requestUrl = this.TIPS_URL.replace("{venue_id}", venueId) + client.requestQuery();
+//			}	
+		
+			var requestUrl = this.LISTED_URL.replace("{venue_id}", venueId) + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
-			FourSquareUtils.doRequest(requestUrl, requestCallback);
+			FourSquareUtils.doRequest(requestUrl, requestCallback);			
+		},
+		
+		menu: function(venueId, requestCallback)
+		{
+			var requestUrl = this.MENU_URL.replace("{venue_id}", venueId) + client.requestQuery();			
+			FourSquareUtils.doRequest(requestUrl, requestCallback);	
 		},
 		
 		photos: function(venueId, parameters, requestCallback)
@@ -189,20 +305,56 @@ FourSquareEndpoint.getVenuesClient = function()
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		
-		links: function(venueId, requestCallback)
+		similar: function(requestCallback)
 		{
-			var requestUrl = this.LINKS_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			var requestUrl = this.SIMILAR_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		stats: function(venueId, parameters, requestCallback)
+		{
+//			var parameters = {
+//				startAt,
+//				endAt,
+//			}
+			var requestUrl = this.STATS_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
-	
-		marktodo: function(venueId, parameters, requestCallback)
+		
+		tips: function(venueId, parameters, requestCallback)
 		{
 //			var parameters = {
-//				text
+//				sort,
+//				limit,
+//				offset
 //			}
 			
-			var requestUrl = this.MARK_TODO_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			var requestUrl = this.TIPS_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		edit: function(venueId, parameters, requestCallback)
+		{
+//			var parameters = {
+//				name,
+//				address,
+//				crossStreet,
+//				city,
+//				state,
+//				zip, 
+//				phone, 
+//				ll,
+//				categoryId,
+//				twitter,
+//				description,
+//				url
+//			}
+			
+			var requestUrl = this.EDIT_URL.replace("{venue_id}", venueId) + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
@@ -215,6 +367,18 @@ FourSquareEndpoint.getVenuesClient = function()
 //			}
 			
 			var requestUrl = this.FLAG_URL.replace("{venue_id}", venueId) + client.requestQuery();
+			requestUrl += FourSquareUtils.createQueryString("&", parameters);
+			
+			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
+		},
+		
+		marktodo: function(venueId, parameters, requestCallback)
+		{
+//			var parameters = {
+//				text
+//			}
+			
+			var requestUrl = this.MARK_TODO_URL.replace("{venue_id}", venueId) + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&", parameters);
 			
 			FourSquareUtils.doRequest(requestUrl, requestCallback, "POST");
