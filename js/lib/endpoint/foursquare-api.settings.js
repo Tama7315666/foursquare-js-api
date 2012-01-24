@@ -28,6 +28,8 @@ FourSquareEndpoint.getSettingsClient = function()
 	return {
 		SETTING_URL: "https://api.foursquare.com/v2/settings/{setting_id}",
 
+		ALL_URL: "https://api.foursquare.com/v2/settings/all",
+		
 		SET_URL: "https://api.foursquare.com/v2/settings/{setting_id}/set",
 		
 		// sendToTwitter, sendToFacebook, receivePings, receiveCommentPings.
@@ -36,6 +38,11 @@ FourSquareEndpoint.getSettingsClient = function()
 			var settingParam = (settingId) ? settingId : "all";
 			var requestUrl = this.SETTING_URL.replace("{setting_id}", settingId) + client.requestQuery();
 			
+			FourSquareUtils.doRequest(requestUrl, requestCallback);
+		},
+		
+		all: function(requestCallback)
+		{
 			FourSquareUtils.doRequest(requestUrl, requestCallback);
 		},
 		

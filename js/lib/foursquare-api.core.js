@@ -246,6 +246,20 @@ FourSquareUtils =
 	    {
 	    	request.send();
 	    }
+	},
+	
+	doSimpleRequest: function(endPointUrl, requestCallback)
+	{
+		var requestUrl = endPointUrl + client.requestQuery();
+		FourSquareUtils.doRequest(requestUrl, requestCallback);
+	},
+	
+	doIntricateRequest: function(endPointUrl, parameters, requestCallback)
+	{
+		var requestUrl = endPointUrl + client.requestQuery();;
+		requestUrl += FourSquareUtils.createQueryString("&", parameters);
+		
+		FourSquareUtils.doRequest(requestUrl, requestCallback);
 	}
 };
 
@@ -331,4 +345,6 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 	this.specialsClient = FourSquareEndpoint.getSpecialsClient.call(this);
 	
 	this.updatesClient = FourSquareEndpoint.getUpdatesClient.call(this);
+	
+	this.eventsClient = FourSquareEndpoint.getUpdatesClient.call(this);
 };

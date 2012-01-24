@@ -22,45 +22,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-var getScriptPath = function() 
+FourSquareEndpoint.getEventsClient = function()
 {
-    var scripts = document.getElementsByTagName('script');
-    var path = '';
-        
-    if(scripts && scripts.length>0) 
-    {
-        for(var i in scripts) 
-        {
-            if(scripts[i].src && scripts[i].src.match(/foursquare\-api(.*)$/)) 
-            {
-                path = scripts[i].src.replace(/foursquare-js-api(.*)\.js$/, '$1');
-            }
-        }
-    }
-    
-    return path;
+	var client = this;
+	return {
+		EVENTS_URL: "https://api.foursquare.com/v2/events/{event_id}",
+		
+		CATEGORIES_URL: "https://api.foursquare.com/v2/events/categories",
+		
+		SEARCH_URL: "https://api.foursquare.com/v2/events/search",
+		
+		events: function(eventId, requestCallback)
+		{
+			FoursquareUtils.doSimpleRequest(this.EVENTS_URL.replace('event_id', eventId), requestCallback);
+		},
+		
+		categories: function(requestCallback)
+		{
+			FoursquareUtils.doSimpleRequest(this.CATEGORIES_URL, requestCallback);
+		},
+		
+		search: function(parameters, requestCallback)
+		{
+//			var parameters = {
+//				domain,
+//				id
+//			}
+			
+			FoursquareUtils.doIntricateRequest(this.SEARCH_URL, parameters, requestCallback);
+		}
+	};
 };
-
-function require(file)
-{
-    try
-    {
-        document.write('<script type="text\/javascript" src="'+file+'" charset="utf-8"><\/s' + 'cript>');
-    }
-    catch(exc)
-    {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = file;
-        document.getElementsByTagName('head')[0].appendChild(script);
-    }
-}
-
-var path = getScriptPath();
-require(path + "lib/foursquare-api.core.js");
-
-var types = ["photos", "venues", "settings", "users", "checkins", "tips", "specials", "updates", "events"];
-for(var type in types)
-{
-	require(path + "lib/endpoint/foursquare-api."+ types[type] +".js");
-}
