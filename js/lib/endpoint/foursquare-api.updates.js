@@ -41,9 +41,9 @@ FourSquareEndpoint.getUpdatesClient = function()
 		
 		notifications: function(parameters, requestCallback)
 		{
-			var parameters = {
-					limit
-			}
+//			var parameters = {
+//					limit
+//			}
 			
 			var requestUrl = this.NOTIFICATIONS_URL + client.requestQuery();
 			requestUrl += FourSquareUtils.createQueryString("&", parameters);

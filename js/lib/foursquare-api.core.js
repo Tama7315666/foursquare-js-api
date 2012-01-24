@@ -316,20 +316,19 @@ FourSquareClient = function(clientId, clientSecret, redirectUri, rememberAppCred
 	// The separate clients for each type of endpoint.
 	//=================================================
 
-//	this.usersClient = this.getUsersClient();	
-//	
+	this.usersClient = FourSquareEndpoint.getUsersClient.call(this);	
 
 	this.venuesClient = FourSquareEndpoint.getVenuesClient.call(this); 
-//	
-//	this.checkinsClient = this.getCheckinsClient();
-//		
-//	this.tipsClient = this.getTipsClient();
-//	
-//	this.photosClient = this.getPhotosClient();
-//	
-//	this.settingsClient = this.getSettingsClient();
-//	
-//	this.specialsClient = this.getSpecialsClient();
-//	
-//	this.updatesClient = this.getUpdatesClient();
+	
+	this.checkinsClient = FourSquareEndpoint.getCheckinsClient.call(this);
+		
+	this.tipsClient = FourSquareEndpoint.getTipsClient.call(this);
+	
+	this.photosClient = FourSquareEndpoint.getPhotosClient.call(this);
+	
+	this.settingsClient = FourSquareEndpoint.getSettingsClient.call(this);
+	
+	this.specialsClient = FourSquareEndpoint.getSpecialsClient.call(this);
+	
+	this.updatesClient = FourSquareEndpoint.getUpdatesClient.call(this);
 };

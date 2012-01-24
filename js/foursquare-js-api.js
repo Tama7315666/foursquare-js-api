@@ -59,7 +59,7 @@ function require(file)
 var path = getScriptPath();
 require(path + "lib/foursquare-api.core.js");
 
-var types = ["photos", "venues", "settings", "users", "checkins", "tips", "specials"];
+var types = ["photos", "venues", "settings", "users", "checkins", "tips", "specials", "updates"];
 for(var type in types)
 {
 	require(path + "lib/endpoint/foursquare-api."+ types[type] +".js");
